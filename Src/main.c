@@ -9,10 +9,14 @@
 #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 // Here after Pulling.
 >>>>>>> a7c680c3190bdd1a6420d1e76049e5c1a00dd4d8
+=======
+// Here after Pulling and Then with a small change.
+>>>>>>> d462df7c3629d7d7645dcadb6b6755682f532c4b
 #include "STM32F103x6.h"
 #include "GPIO_Driver.h"
 
