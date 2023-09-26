@@ -13,6 +13,7 @@
 - Other useful microcontroller configuration macros.
 
 ## 2. GPIO Driver:
+![image](https://github.com/Mo-Alsehli/STM32F103C6_Drivers/assets/98949843/f02b7568-d863-46b0-9cb7-d02ced6c0870)
 
 ## Basic Functionality:
 
