@@ -8,7 +8,11 @@
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
 #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
+<<<<<<< HEAD
 
+=======
+// Here after Pulling.
+>>>>>>> a7c680c3190bdd1a6420d1e76049e5c1a00dd4d8
 #include "STM32F103x6.h"
 #include "GPIO_Driver.h"
 
