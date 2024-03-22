@@ -14,6 +14,8 @@ uint16_t overflowTimsTIM4 = 0;
 uint16_t timerTicksTIM4 = 0;
 uint16_t overflowTimsTIM3 = 0;
 uint16_t timerTicksTIM3 = 0;
+uint16_t overflowTimsTIM1 = 0;
+uint16_t timerTicksTIM1 = 0;
 volatile uint64_t millis_count = 0;
 
 
@@ -120,7 +122,7 @@ void delay(uint16_t time, uint8_t unit, uint32_t clk){
 	while(delayFlag);
 }
 
-
+// This function is used with TIM3 and TIM4
 uint32_t timeCalc(TIMx_TYPE_DEF* timx, uint32_t clk, uint8_t timerState){
 	if(timerState == TIM_START){
 
@@ -171,40 +173,36 @@ uint32_t timeCalc(TIMx_TYPE_DEF* timx, uint32_t clk, uint8_t timerState){
 }
 
 
+void TIM1CalcMicrosInit(void){
+	// Enable Clock For Timer 1
+	RCC_TIM1_CLk_EN();
 
-/*
- * This function is used to initialize TIM3 to count every 1 milli-second.
- * It simulates the Millis() function in Arduino
- */
-void millisInit(void) {
-	// Enable TIM1 clock
-	RCC_TIM3_CLk_EN();
+	TIM1 -> CR1 &= ~(1<<CEN);
+	TIM1 -> CR1 |= (1 << URS);
+	TIM1 -> DIER |= (1 << UIE);
 
-	TIM3 -> CR1 &= ~(1<<CEN);
-	TIM3 -> CR1 |= (1 << URS);
-	TIM3 -> DIER |= (1 << UIE);
+	TIM1->ARR = 64000; // Peak value to get delay of 8ms at freq = 8000000hz
 
-	/*
-	 * delay = (pre * ticks) / freq.
-	 */
-	TIM3->ARR = 1000; // Peak value to get delay of 1ms at freq = 8000000hz
-
-	TIM3->PSC = 8;
-	TIM3->EGR |= (1<<0);
+	TIM1->PSC = 0;
+	TIM1->EGR |= (1<<0);
 	// Enable Timer
-	TIM3->CR1 |= (1 << 0);
+	TIM1->CR1 |= (1 << 0);
 
-
-	NVIC_IRQ29_TIM3_Enable;
-
-}
-
-uint64_t Millis(void) {
-	return millis_count;
+	NVIC_IRQ25_TIM1_Enable;
 }
 
 
+uint64_t TIM1CalcMicros(uint32_t clk){
+	timerTicksTIM1 = TIM1->CNT;
+	uint64_t x = ((timerTicksTIM1 + overflowTimsTIM1 * 64000)) / (clk/1000000); // (time in micro-seconds)
+	return x;
+}
 
+
+
+
+
+// Timer ISR() Handler
 
 // IRQ for delay Function with Timer2
 void TIM2_IRQHandler(){
@@ -214,20 +212,24 @@ void TIM2_IRQHandler(){
 	TIM2->CR1 &= ~(1<<CEN);
 }
 
+
+void TIM1_UP_IRQHandler(void) {
+        // Clear the update interrupt flag
+        TIM1->SR &= ~(1 << 0);
+    	overflowTimsTIM1++;
+}
+
+
+void TIM3_IRQHandler(){
+	TIM3->SR &= ~(1 << 0);
+	overflowTimsTIM3++;
+}
 // IRQ for timeCalc function with Timer4.
 void TIM4_IRQHandler(){
 	TIM4->SR &= ~(1 << 0);
 	overflowTimsTIM4++;
 }
 
-void TIM3_IRQHandler(){
-	//	TIM3->SR &= ~(1 << 0);
-	//	overflowTimsTIM3++;
-	// Clear the update interrupt flag
-	TIM3->SR &= ~(1 << 0);
-	// Increment millis count
-	millis_count++;
-}
 
 
 

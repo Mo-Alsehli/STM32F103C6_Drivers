@@ -37,8 +37,8 @@
 
 void delay( uint16_t time, uint8_t unit, uint32_t clk);
 uint32_t timeCalc(TIMx_TYPE_DEF* timx, uint32_t clk, uint8_t timerState);
-void millisInit(void);
-uint64_t Millis();
+void TIM1CalcMicrosInit(void);
+uint64_t TIM1CalcMicros(uint32_t clk);
 
 
 
