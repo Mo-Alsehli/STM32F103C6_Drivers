@@ -41,7 +41,7 @@ typedef struct {
 	// Enable or Disable UART IRQ TX/RX
 	// This parameter is set @ref UART_IRQ_Enable_define
 	uint8_t IRQ_Enable;
-	// Set the function() which will be alled once the IRQ Happen.
+	// Set the function() which will be called once the IRQ Happen.
 	void(* P_IRQ_Callback)(void);
 }UART_Config_t;
 
@@ -120,12 +120,12 @@ enum Polling_Mechanism {
 //------------------------------------------
 // Baudrate Calculation
 //------------------------------------------
-#define UARTDIV(_PCLK_, _BAUD_)					(uint32_t)(_PCLK_ / 16*_BAUD_)
-#define UARTDIV_MUL100(_PCLK_, _BAUD_)			(uint32_t)(25 * _PCLK_ / 4 * _BAUD_)
+#define UARTDIV(_PCLK_, _BAUD_)					(uint32_t)(_PCLK_ / (16*_BAUD_))
+#define UARTDIV_MUL100(_PCLK_, _BAUD_)			(uint32_t)((25 * _PCLK_) / (4 * _BAUD_))
 #define Mantissa_MUL100(_PCLK_, _BAUD_)			(uint32_t)(UARTDIV(_PCLK_, _BAUD_) * 100)
 #define Mantissa(_PCLK_, _BAUD_)				(uint32_t)(UARTDIV(_PCLK_, _BAUD_))
-#define DIV_Fraction(_PCLK_, _BAUD_)			(uint32_t)(((Mantissa_MUL100(_PCLK_, _BAUD_) - Mantissa(_PCLK_, _BAUD_)) * 16) / 100)
-#define UART_BRR_REG(_PCLK_, _BAUD_)			((Mantissa(_PCLK_, _BAUD_)) << 4 | ((DIV_Fraction(_PCLK_, _BAUD_)) & 0xF))
+#define Div_Fraction(baudrate,clock)           	(uint32_t)(((UARTDIV_MUL100(baudrate,clock)-100*UARTDIV(baudrate,clock))*16)/100)
+#define UART_BRR_REG(baudrate,clock)      		((Mantissa(baudrate,clock)) <<4)|(Div_Fraction(baudrate,clock)&0xf)
 
 
 //------------------------------------------
