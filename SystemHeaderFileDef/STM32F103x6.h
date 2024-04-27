@@ -65,8 +65,29 @@
 
 // UART
 #define UART1_BASE						0x40013800UL
+
+// SPI (Serial Peripheral Interface).
+#define SPI1_BASE						0x40013000UL
+
+// TIMER 1
+#define TIM1_BASE						0x40012C00UL
+
+
+//---------------------------------------------------
+//Base addresses for Bus APB1 Peripherals.
+//---------------------------------------------------
+
+// SPI (Serial Peripheral Interface).
+#define SPI2_BASE						0x40003800UL
+
+// UART
 #define UART2_BASE						0x40004400UL
 #define UART3_BASE						0x40014800UL
+
+// TIM2, TIM3, TIM4
+#define TIM2_BASE						0x40000000UL
+#define TIM3_BASE						0x40000400UL
+#define TIM4_BASE						0x40000800UL
 
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -140,8 +161,49 @@ typedef struct {
 	volatile uint32_t CR2;
 	volatile uint32_t CR3;
 	volatile uint32_t GTPR;
-
 }UART_TYPE_DEF;
+
+//-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+// Peripheral register:	SPI
+//-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+typedef struct {
+	volatile uint32_t CR1;
+	volatile uint32_t CR2;
+	volatile uint32_t SR;
+	volatile uint32_t DR;
+	volatile uint32_t CRCPR;
+	volatile uint32_t RXCRCR;
+	volatile uint32_t TXCRCR;
+	volatile uint32_t I2SCFGR;
+	volatile uint32_t I2SPR;
+}SPI_TYPE_DEF;
+
+//-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+// Peripheral register:	TIMx, TIM2,3,4
+//-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+typedef struct{
+	volatile uint32_t CR1;
+	volatile uint32_t CR2;
+	volatile uint32_t SMCR;
+	volatile uint32_t DIER;
+	volatile uint32_t SR;
+	volatile uint32_t EGR;
+	volatile uint32_t CCMR1;
+	volatile uint32_t CCMR2;
+	volatile uint32_t CCER;
+	volatile uint32_t CNT;
+	volatile uint32_t PSC;
+	volatile uint32_t ARR;
+	volatile uint32_t RCR; // This Register is reserved in TIM2,3,4 but not inTIM1
+	volatile uint32_t CCR1;
+	volatile uint32_t CCR2;
+	volatile uint32_t CCR3;
+	volatile uint32_t CCR4;
+	volatile uint32_t BDTR; // This Register is reserved in TIM2,3,4 but not inTIM1
+	volatile uint32_t DCR;
+	volatile uint32_t DMAR;
+}TIMx_TYPE_DEF;
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // Peripheral Instants:
@@ -164,6 +226,16 @@ typedef struct {
 #define UART2			                ((UART_TYPE_DEF*) UART2_BASE)
 #define UART3			                ((UART_TYPE_DEF*) UART3_BASE)
 
+// SPI
+#define SPI1			                ((SPI_TYPE_DEF*) SPI1_BASE)
+#define SPI2			                ((SPI_TYPE_DEF*) SPI2_BASE)
+
+// TIMx
+#define TIM1			                ((TIMx_TYPE_DEF*) TIM1_BASE)
+#define TIM2			                ((TIMx_TYPE_DEF*) TIM2_BASE)
+#define TIM3			                ((TIMx_TYPE_DEF*) TIM3_BASE)
+#define TIM4			                ((TIMx_TYPE_DEF*) TIM4_BASE)
+
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // Clock Enable Macros:
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -174,7 +246,7 @@ typedef struct {
 #define RCC_GPIOD_CLk_EN()				(RCC->APB2ENR |= 1 << 5)
 #define RCC_GPIOE_CLk_EN()				(RCC->APB2ENR |= 1 << 6)
 
-#define AFIO_CLK_EN()					(RCC->APB2ENR |= 1 << 0)
+#define RCC_AFIO_CLK_EN()				(RCC->APB2ENR |= 1 << 0)
 
 // UART
 // Clock Enable UART
@@ -187,6 +259,26 @@ typedef struct {
 #define RCC_UART2_Reset()				(RCC->APB1RSTR |= 1 << 17)
 #define RCC_UART3_Reset()				(RCC->APB1RSTR |= 1 << 18)
 
+// TIMx
+// Clock Enable TIMx
+#define RCC_TIM1_CLk_EN()				(RCC->APB2ENR |= 1 << 11)
+#define RCC_TIM2_CLk_EN()				(RCC->APB1ENR |= 1 << 0)
+#define RCC_TIM3_CLk_EN()				(RCC->APB1ENR |= 1 << 1)
+#define RCC_TIM4_CLk_EN()				(RCC->APB1ENR |= 1 << 2)
+
+// Clock Reset TIMx
+#define RCC_TIM1_CLk_Reset()				(RCC->APB2RSTR |= 1 << 11)
+#define RCC_TIM2_CLk_Reset()				(RCC->APB1RSTR |= 1 << 0)
+#define RCC_TIM3_CLk_Reset()				(RCC->APB1RSTR |= 1 << 1)
+#define RCC_TIM4_CLk_Reset()				(RCC->APB1RSTR |= 1 << 2)
+
+// SPI
+// Clock Enable
+#define RCC_SPI1_CLK_EN()				(RCC->APB2ENR |= 1 << 12)
+#define RCC_SPI2_CLK_EN()				(RCC->APB1ENR |= 1 << 14)
+// Clock Reset
+#define RCC_SPI1_CLK_Dis()				(RCC->APB2RSTR |= 1 << 12)
+#define RCC_SPI2_CLK_Dis()				(RCC->APB1RSTR |= 1 << 14)
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // IVT:
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -214,6 +306,10 @@ typedef struct {
 #define UART2_IRQ						38
 #define UART3_IRQ						39
 
+// SPI
+#define SPI1_IRQ						35
+#define SPI2_IRQ						36
+
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // NVIC IRQ Enable/Disable Macros:
@@ -240,16 +336,33 @@ typedef struct {
 #define NVIC_IRQ23_EXTI5_9_Disable		(NVIC_ICER0 |= 1<<23)
 #define NVIC_IRQ40_EXTI10_15_Disable	(NVIC_ICER1 |= 1<<8)
 
-// UART Interrupts
+// UART Interruptsd
 // Enable
-#define NVIC_IRQ37_UART1_Enable		(NVIC_ISER1 |= 1 << (UART1_IRQ - 32))
-#define NVIC_IRQ38_UART2_Enable		(NVIC_ISER1 |= 1 << (UART2_IRQ - 32))
-#define NVIC_IRQ39_UART3_Enable		(NVIC_ISER1 |= 1 << (UART3_IRQ - 32))
+#define NVIC_IRQ38_UART2_Enable			(NVIC_ISER1 |= 1 << (UART2_IRQ - 32))
+#define NVIC_IRQ37_UART1_Enable			(NVIC_ISER1 |= 1 << (UART1_IRQ - 32))
+#define NVIC_IRQ39_UART3_Enable			(NVIC_ISER1 |= 1 << (UART3_IRQ - 32))
 // Disable
 #define NVIC_IRQ37_UART1_Disable		(NVIC_ICER1 |= 1 << (UART1_IRQ - 32))
 #define NVIC_IRQ38_UART2_Disable		(NVIC_ICER1 |= 1 << (UART2_IRQ - 32))
 #define NVIC_IRQ39_UART3_Disable		(NVIC_ICER1 |= 1 << (UART3_IRQ - 32))
 
+// TIMx 2, 3, 4 Interrupt Mask Enable.
+#define NVIC_IRQ25_TIM1_Enable			(NVIC_ISER0 |= 1 << 25)
+#define NVIC_IRQ28_TIM2_Enable			(NVIC_ISER0 |= 1 << 28)
+#define NVIC_IRQ29_TIM3_Enable			(NVIC_ISER0 |= 1 << 29)
+#define NVIC_IRQ30_TIM4_Enable			(NVIC_ISER0 |= 1 << 30)
+// TIMx 2, 3, 4 Interrupt Mask Disable.
+#define NVIC_IRQ25_TIM1_Disable			(NVIC_ICER0 |= 1 << 25)
+#define NVIC_IRQ28_TIM2_Disable			(NVIC_ICER0 |= 1 << 28)
+#define NVIC_IRQ29_TIM3_Disable			(NVIC_ICER0 |= 1 << 29)
+#define NVIC_IRQ30_TIM4_Disable			(NVIC_ICER0 |= 1 << 30)
+
+// SPI Interrupt Mask Enable
+#define NVIC_IRQ35_SPI1_Enable			(NVIC_ISER1 |= (1 << (SPI1_IRQ - 32)))
+#define NVIC_IRQ36_SPI2_Enable			(NVIC_ISER1 |= (1 << (SPI2_IRQ - 32)))
+// SPI Interrupt Mask Disable
+#define NVIC_IRQ35_SPI1_Disable			(NVIC_ICER1 |= (1 << (SPI1_IRQ - 32)))
+#define NVIC_IRQ36_SPI2_Disable			(NVIC_ICER1 |= (1 << (SPI2_IRQ - 32)))
 
 
 #endif /* INC_STM32F103X6_H_ */
