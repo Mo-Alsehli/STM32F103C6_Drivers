@@ -64,7 +64,6 @@ void Enable_NVIC(uint16_t IRQ){
 	case 12:
 	case 13:
 	case 14:
-	case 15:
 		NVIC_IRQ40_EXTI10_15_Enable;
 		break;
 	}

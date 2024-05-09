@@ -256,6 +256,18 @@ uint8_t MCAL_GPIO_LockPin(GPIO_TYPE_DEF* gpiox, uint16_t pinNum){
 	}
 }
 
+// Execution Time (seconds) = (time * 255 * 4) / F_CPU
+// when time = 1, It takes 1 Melli-seconds.
+void wait(uint32_t time)
+{
+	uint32_t i, j;
+	for (i = 0; i < time; i++)
+	{
+		for (j = 0; j < 255; j++)
+		;
+	}
+}
+
 
 
 

@@ -11,6 +11,8 @@
 // Generic Variables
 // ------------------------------------------------------------------
 SPI_Config* gSPIConfig[2] = {NULL, NULL};
+SPI_Config gSPI1Config;
+SPI_Config gSPI2Config;
 
 
 // ------------------------------------------------------------------
@@ -40,10 +42,12 @@ void MCAL_SPI_Init(SPI_TYPE_DEF* spix, SPI_Config* spiCfg){
 	uint16_t tmpRegCR2 = 0;
 
 	if(spix == SPI1){
-		gSPIConfig[SPI1_INDEX] = spiCfg;
+		gSPI1Config = *spiCfg;
+		gSPIConfig[SPI1_INDEX] = &gSPI1Config;
 		RCC_SPI1_CLK_EN();
 	}else if(spix == SPI2){
-		gSPIConfig[SPI2_INDEX] = spiCfg;
+		gSPI2Config = *spiCfg;
+		gSPIConfig[SPI2_INDEX] = &gSPI2Config;
 		RCC_SPI2_CLK_EN();
 	}
 

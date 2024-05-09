@@ -16,8 +16,7 @@ uint16_t overflowTimsTIM3 = 0;
 uint16_t timerTicksTIM3 = 0;
 uint16_t overflowTimsTIM1 = 0;
 uint16_t timerTicksTIM1 = 0;
-volatile uint64_t millis_count = 0;
-
+volatile uint64_t xMicros = 0;
 
 // Static Functions
 
@@ -117,7 +116,7 @@ void delay(uint16_t time, uint8_t unit, uint32_t clk){
 	// Enable Timer
 	TIM2->CR1 |= (1 << CEN);
 
-	NVIC_IRQ28_TIM2_Enable; 
+	NVIC_IRQ28_TIM2_Enable;
 
 	while(delayFlag);
 }
@@ -194,8 +193,8 @@ void TIM1CalcMicrosInit(void){
 
 uint64_t TIM1CalcMicros(uint32_t clk){
 	timerTicksTIM1 = TIM1->CNT;
-	uint64_t x = ((timerTicksTIM1 + overflowTimsTIM1 * 64000)) / (clk/1000000); // (time in micro-seconds)
-	return x;
+	xMicros = ((timerTicksTIM1 + overflowTimsTIM1 * 64000)) / (clk/1000000); // (time in micro-seconds)
+	return xMicros;
 }
 
 
@@ -213,7 +212,7 @@ void TIM2_IRQHandler(){
 }
 
 
-void TIM1_UP_IRQHandler(void) {
+void TIM1_UP_IRQHandler() {
         // Clear the update interrupt flag
         TIM1->SR &= ~(1 << 0);
     	overflowTimsTIM1++;
